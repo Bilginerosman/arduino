@@ -1,0 +1,27 @@
+#define Buton 8
+#define echoPin 2
+#define trigPin 3
+
+long duration;
+int mesafe;
+
+void setup() {
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  pinMode(Buton, INPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  if (digitalRead(Buton) == 1) {
+    digitalWrite(trigPin, LOW);
+    delayMicroseconds(2);
+    digitalWrite(trigPin, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(trigPin, LOW);
+    duration = pulseIn(echoPin, HIGH);
+    mesafe = duration *  0.01716;
+    Serial.println(mesafe);
+    Serial.write(mesafe);
+  }
+}
