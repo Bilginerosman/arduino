@@ -1,0 +1,78 @@
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+const int in1 = 11;
+const int in2 = 10;
+const int in3 =  8;
+const int in4 =  9;
+const int enA = 12;
+const int enB = 13;
+void setup() {
+  lcd.init();
+  pinMode(in1, OUTPUT);
+  pinMode(in2, OUTPUT);
+  pinMode(in3, OUTPUT);
+  pinMode(in4, OUTPUT);
+  pinMode(enA, OUTPUT);
+  pinMode(enB, OUTPUT);
+  lcd.backlight();
+  lcd.begin(16, 2);
+  lcd.print("Baslamak icin");
+  lcd.setCursor(0, 1);
+  lcd.print("BUTONA Basiniz");
+  Serial.begin(9600);
+}
+int cm = 0;
+void loop() {
+  if (Serial.available() > 0) {
+    lcd.clear ( );
+    cm = Serial.read();
+    Serial.print("cm");
+    lcd.print("Mesafe:");
+    lcd.setCursor(8, 0);
+    lcd.print(cm);
+    lcd.print("  CM  ");
+    if (cm > 100) {
+      analogWrite(enA,  3000);
+      digitalWrite(in1, LOW);
+      digitalWrite(in2,  HIGH);
+      analogWrite(enB,  3000);
+      digitalWrite(in3, HIGH);
+      digitalWrite(in4,  LOW);
+      lcd.setCursor(0, 1);
+
+      lcd.print("Devir:");
+      lcd.setCursor(7, 1);
+      lcd.print(3000);
+      lcd.print("  d/d  ");
+    }
+    else if (cm < 20) {
+      analogWrite(enA,  0);
+      digitalWrite(in1, LOW);
+      digitalWrite(in2,  HIGH);
+      analogWrite(enB,  0);
+      digitalWrite(in3, HIGH);
+      digitalWrite(in4,  LOW);
+      lcd.setCursor(0, 1);
+      lcd.print("Devir:");
+      lcd.setCursor(7, 1);
+      lcd.print(0);
+      lcd.print("  d/d  ");
+    }
+    else {
+      int k = 100 - cm;
+      int d = 3000 - (k * 20);
+      analogWrite(enA, d );
+      digitalWrite(in1, LOW);
+      digitalWrite(in2,  HIGH);
+      analogWrite(enB,  d);
+      digitalWrite(in3, HIGH);
+      digitalWrite(in4,  LOW);
+      lcd.setCursor(0, 1);
+      lcd.print("Devir:");
+      lcd.setCursor(7, 1);
+      lcd.print(d);
+      lcd.print("  d/d  ");
+    }
+  }
+}
